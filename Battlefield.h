@@ -2,34 +2,34 @@
 #include <cstring>
 #include <iostream>
 #include "Ship.h"
-#include "Two_deck_ship.h"
-#include "One_deck_ship.h"
-#include "Three_deck_ship.h"
-#include "Four_deck_ship.h"
 
 class Battlefield
 {
 public:
-	Battlefield()// конструктор без параметров 
+	Battlefield()// РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ Р±РµР· РїР°СЂР°РјРµС‚СЂРѕРІ 
 	{
-		memset(field, 0, sizeof(field)); // заполнение матрицы нулями 
+		memset(field, 0, sizeof(field)); // Р·Р°РїРѕР»РЅРµРЅРёРµ РјР°С‚СЂРёС†С‹ РЅСѓР»СЏРјРё 
 	}
-	void Put_ship(Ship *sheep); // функция постаноовки корабля на поле
-	void Show(int flag); // функция показа поля
-	bool Shot(int flag); // функция выстрела
-	void Shot_ship(int numb_ship, int y, int x); // функция выстрела по кораблю
-	int Choice_ship(int ); // функция выборки корабля
-	bool Check_coordinate(int y, int x); // функция проверки занята ли координата
-	bool Check_quantity_ships(); // функция проверки на то есть корабли на поле или нет
-	void Put_ships_default(); // функция расстановки кораблей по умолчанию
-	void Default_quantity_ships() { q_ship2 = 3, q_ship1 = 4, q_ship3 = 2, q_ship4 = 1; } // функция устанавливает количество кораблей по умолчанию 
+	void Put_ship(Ship *sheep); // С„СѓРЅРєС†РёСЏ РїРѕСЃС‚Р°РЅРѕРѕРІРєРё РєРѕСЂР°Р±Р»СЏ РЅР° РїРѕР»Рµ
+	void Show(int flag); // С„СѓРЅРєС†РёСЏ РїРѕРєР°Р·Р° РїРѕР»СЏ
+	bool Shot(int flag); // С„СѓРЅРєС†РёСЏ РІС‹СЃС‚СЂРµР»Р°
+	bool Shot_bomb(); // С„СѓРЅРєС†РёСЏ РІС‹СЃС‚СЂРµР»Р° Р±РѕРјР±РѕР№
+	bool Shot_torpedo(); // С„СѓРЅРєС†РёСЏ РІС‹СЃС‚СЂРµР»Р° С‚РѕСЂРїРµРґРѕР№
+	void Shot_ship(int numb_ship, int y, int x); // С„СѓРЅРєС†РёСЏ РІС‹СЃС‚СЂРµР»Р° РїРѕ РєРѕСЂР°Р±Р»СЋ
+	void Minus_bomb() { q_bombs--; } // СѓРјРµРЅСЊС€Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ Р±РѕРјР± РЅР° 1
+	void Minus_torpedo() { q_torpedo--; } // СѓРјРµРЅСЊС€Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕСЂРїРµРґ РЅР° 1
+	int Choice_ship(int ); // С„СѓРЅРєС†РёСЏ РІС‹Р±РѕСЂРєРё РєРѕСЂР°Р±Р»СЏ
+	bool Check_coordinate(int y, int x); // С„СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂРєРё Р·Р°РЅСЏС‚Р° Р»Рё РєРѕРѕСЂРґРёРЅР°С‚Р°
+	bool Check_quantity_ships(); // С„СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂРєРё РЅР° С‚Рѕ РµСЃС‚СЊ РєРѕСЂР°Р±Р»Рё РЅР° РїРѕР»Рµ РёР»Рё РЅРµС‚
+	void Put_ships_default(); // С„СѓРЅРєС†РёСЏ СЂР°СЃСЃС‚Р°РЅРѕРІРєРё РєРѕСЂР°Р±Р»РµР№ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+	void Default_quantity_ships() { q_ship2 = 3, q_ship1 = 4, q_ship3 = 2, q_ship4 = 1; } // С„СѓРЅРєС†РёСЏ СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РєРѕСЂР°Р±Р»РµР№ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 
 	friend class Game;
 private:
 	int field[10][10];
-	int q_ship2 = 3, q_ship1 = 4, q_ship3 = 2, q_ship4 = 1; // количество однопалубных кораблей q_ship1 = 4 и т.д.
-	Two_deck_ship ship2[3]; // массив двупалубных кораблей
-	One_deck_ship ship1[4]; // массив однопалубных кораблей
-	Three_deck_ship ship3[2]; // массив трехпалубных кораблей
-	Four_deck_ship ship4[1]; // массив четырехпалубных кораблей
+	int q_ship2 = 3, q_ship1 = 4, q_ship3 = 2, q_ship4 = 1; // РєРѕР»РёС‡РµСЃС‚РІРѕ РѕРґРЅРѕРїР°Р»СѓР±РЅС‹С… РєРѕСЂР°Р±Р»РµР№ q_ship1 = 4 Рё С‚.Рґ.
+	int q_bombs = 2, q_torpedo = 3;
+	Ship ship2[3] { Ship(2),Ship(2), Ship(2) }; // РјР°СЃСЃРёРІ РґРІСѓРїР°Р»СѓР±РЅС‹С… РєРѕСЂР°Р±Р»РµР№
+	Ship ship1[4] { Ship(1),Ship(1), Ship(1), Ship(1) }; // РјР°СЃСЃРёРІ РѕРґРЅРѕРїР°Р»СѓР±РЅС‹С… РєРѕСЂР°Р±Р»РµР№
+	Ship ship3[2] { Ship(3),Ship(3) }; // РјР°СЃСЃРёРІ С‚СЂРµС…РїР°Р»СѓР±РЅС‹С… РєРѕСЂР°Р±Р»РµР№
+	Ship ship4[1] { Ship(4) }; // РјР°СЃСЃРёРІ С‡РµС‚С‹СЂРµС…РїР°Р»СѓР±РЅС‹С… РєРѕСЂР°Р±Р»РµР№
 };
-
