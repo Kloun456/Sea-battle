@@ -4,7 +4,6 @@
 class Game
 {
 public:
-	
 	void Start_game();
 	void Battle();
 	void End_game(int flag);
