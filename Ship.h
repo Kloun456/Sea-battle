@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include "Point.h"
 #include <vector>
 #include <string>
 #include <cstring>
@@ -11,14 +10,14 @@ class Ship
 {
 public:
 	Ship(int hp); 
-	void virtual Death() = 0;
+	void Death();
 	bool Hit();
 	void Set_coordinates(int x, int y, int numb_point);
 	void Show();
 	int Get_hp() { return hp; }
-	int Get_x(int numb_point) { return coordinates[numb_point][0]; } // получаем координату х
-	int Get_y(int numb_point) { return coordinates[numb_point][1]; } // получаем координату у
+	int Get_x(int numb_point) { return coordinates[numb_point][0]; } // РїРѕР»СѓС‡Р°РµРј РєРѕРѕСЂРґРёРЅР°С‚Сѓ С…
+	int Get_y(int numb_point) { return coordinates[numb_point][1]; } // РїРѕР»СѓС‡Р°РµРј РєРѕРѕСЂРґРёРЅР°С‚Сѓ Сѓ
 private:
-	int hp;
-	vector <vector<int>> coordinates; // вектор координат
+	int hp, deck;
+	vector <vector<int>> coordinates; // РІРµРєС‚РѕСЂ РєРѕРѕСЂРґРёРЅР°С‚
 };
