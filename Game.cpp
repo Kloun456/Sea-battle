@@ -4,10 +4,10 @@ using namespace std;
 
 void Game::Start_game()
 {
-	battlefield_2.Put_ships_default(); // для ИИ используем расстановку по умолчанию
+	battlefield_2.Put_ships_default(); // РґР»СЏ РР РёСЃРїРѕР»СЊР·СѓРµРј СЂР°СЃСЃС‚Р°РЅРѕРІРєСѓ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 	int choice, choice_ship = 1; 
-	cout << "\n Select a ship layout option: \n1 - Your arrangement\n2 - Default arrangement\n";
-	cin >> choice; // выбор пункта меню
+	cout << "Select a ship layout option: \n1 - Your arrangement\n2 - Default arrangement\n";
+	cin >> choice; // РІС‹Р±РѕСЂ РїСѓРЅРєС‚Р° РјРµРЅСЋ
 	system("cls");
 	switch (choice)
 	{
@@ -17,56 +17,76 @@ void Game::Start_game()
 			system("cls");
 			battlefield_1.Show(1);
 			cout << "\nChoice ship 1,2,3,4:\n";
-			cin >> choice_ship; // выбор корабля 1 парусный и т.д.
-			choice_ship = battlefield_1.Choice_ship(choice_ship); // функция выбора корабля, choice_ship будет = 0 если все корабли расставлены
+			cin >> choice_ship; // РІС‹Р±РѕСЂ РєРѕСЂР°Р±Р»СЏ 1 РїР°СЂСѓСЃРЅС‹Р№ Рё С‚.Рґ.
+			choice_ship = battlefield_1.Choice_ship(choice_ship); // С„СѓРЅРєС†РёСЏ РІС‹Р±РѕСЂР° РєРѕСЂР°Р±Р»СЏ, choice_ship Р±СѓРґРµС‚ = 0 РµСЃР»Рё РІСЃРµ РєРѕСЂР°Р±Р»Рё СЂР°СЃСЃС‚Р°РІР»РµРЅС‹
 		}
 		battlefield_1.Default_quantity_ships();
 		break;
 	case 2:
-		battlefield_1.Put_ships_default(); // расстановка по умолчанию 
+		battlefield_1.Put_ships_default(); // СЂР°СЃСЃС‚Р°РЅРѕРІРєР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 
 		break;
 	}
 	system("cls");
 	cout << "\nGame start!\n";
-	Battle(); // вызываем функцию основного боя
+	Battle(); // РІС‹Р·С‹РІР°РµРј С„СѓРЅРєС†РёСЋ РѕСЃРЅРѕРІРЅРѕРіРѕ Р±РѕСЏ
 }
 
 void Game::Battle()
 {
-	bool player, AI;
+	bool player = false, AI = false;
+	int numb;
 	while (1)
 	{
 		system("cls");
 		cout << "\nYour battlefield:\n";
-		battlefield_1.Show(1); // показываем поле игрока
+		battlefield_1.Show(1); // РїРѕРєР°Р·С‹РІР°РµРј РїРѕР»Рµ РёРіСЂРѕРєР°
 		cout << "\n\nAI battlefield:\n";
-		battlefield_2.Show(0); // показываем поле ИИ
-		cout << "\nYour shot:\n";
-		player = battlefield_2.Shot(1); // выстрел игрока
-		AI = battlefield_1.Shot(0); // выстрел ИИ
-		if (player) // если игрок попал
+		battlefield_2.Show(0); // РїРѕРєР°Р·С‹РІР°РµРј РїРѕР»Рµ РР
+		cout << "\nYour shot: \n1 - Shot\n2 - Bomb shot (You have " << battlefield_1.q_bombs << " bombs)";
+		cout << "\n3 - Toredo shot (You have " << battlefield_1.q_torpedo << " torpedoes)\n";
+		cin >> numb;
+		switch (numb)
 		{
-			if (battlefield_2.Check_quantity_ships()) // проверяем все ли корабли остались на поле
+		case 1:
+			player = battlefield_2.Shot(1); // РѕР±С‹С‡РЅС‹Р№ РІС‹СЃС‚СЂРµР» РёРіСЂРѕРєР°
+			break;
+		case 2:
+			player = battlefield_2.Shot_bomb(); // РІС‹СЃС‚СЂРµР» Р±РѕРјР±РѕР№ РёРіСЂРѕРєР°
+			if (player)
+				battlefield_1.Minus_bomb(); // РѕС‚РЅРёРјР°РµРј Сѓ РёРіСЂРѕРєР° Р±РѕРјР±Сѓ
+			break;
+		case 3:
+			player = battlefield_2.Shot_torpedo(); // РІС‹СЃС‚СЂРµР» С‚РѕСЂРїРµРґРѕР№
+			if (player)
+				battlefield_1.Minus_torpedo(); // РѕС‚РјРЅРёР°РµРј Сѓ РёРіСЂРѕРєР° С‚РѕСЂРїРµРґСѓ
+
+			break;
+		}
+
+		AI = battlefield_1.Shot(0); // РІС‹СЃС‚СЂРµР» РР
+		if (player) // РµСЃР»Рё РёРіСЂРѕРє РїРѕРїР°Р»
+		{
+			if (battlefield_2.Check_quantity_ships()) // РїСЂРѕРІРµСЂСЏРµРј РІСЃРµ Р»Рё РєРѕСЂР°Р±Р»Рё РѕСЃС‚Р°Р»РёСЃСЊ РЅР° РїРѕР»Рµ
 			{
-				End_game(0); // Если кораблей нет игрок победил
+				End_game(0); // Р•СЃР»Рё РєРѕСЂР°Р±Р»РµР№ РЅРµС‚ РёРіСЂРѕРє РїРѕР±РµРґРёР»
 				return;
 			}
 		}
-		else if (AI) // если ИИ попал
+		else if (AI) // РµСЃР»Рё РР РїРѕРїР°Р»
 		{
-			if (battlefield_1.Check_quantity_ships())  // проверяем все ли корабли остались на поле
+			if (battlefield_1.Check_quantity_ships())  // РїСЂРѕРІРµСЂСЏРµРј РІСЃРµ Р»Рё РєРѕСЂР°Р±Р»Рё РѕСЃС‚Р°Р»РёСЃСЊ РЅР° РїРѕР»Рµ
 			{
-				End_game(1); // Если кораблей нет ИИ победил
+				End_game(1); // Р•СЃР»Рё РєРѕСЂР°Р±Р»РµР№ РЅРµС‚ РР РїРѕР±РµРґРёР»
 				return;
 			}
 		}
 	}
 }
 
-void Game::End_game(int flag) // функция конца игры
+void Game::End_game(int flag) // С„СѓРЅРєС†РёСЏ РєРѕРЅС†Р° РёРіСЂС‹
 {
-	if (flag) // если конец игры для игрока
+	if (flag) // РµСЃР»Рё РєРѕРЅРµС† РёРіСЂС‹ РґР»СЏ РёРіСЂРѕРєР°
 		cout << "\nGame over!\n";
-	else // если конец игры для ИИ
+	else // РµСЃР»Рё РєРѕРЅРµС† РёРіСЂС‹ РґР»СЏ РР
 		cout << "\nYou win\n";
 }
