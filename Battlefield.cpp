@@ -3,6 +3,27 @@
 
 using namespace std;
 
+bool Check_input(string coordinate)
+{
+	if (coordinate.length() > 4)
+		return false;
+	if (coordinate.length() == 3)
+	{
+		if (coordinate[1] == '-' && coordinate[0] >= 'A' && coordinate[0] <= 'J' && coordinate[2] >= '0' && coordinate[2] <= '9')
+			return true;
+		else
+			return false;
+	}
+	else if (coordinate.length() == 4)
+	{
+		if (coordinate[1] == '-' && coordinate[0] >= 'A' && coordinate[0] <= 'J' && coordinate[2] == '1' && coordinate[3] == '0')
+			return true;
+		else
+			return false;
+	}
+	
+}
+
 void Battlefield::Show(int flag) // Отображение поля битвы flag = 1 для игрока flag = 0 для ИИ
 {
 	cout << "\tA\tB\tC\tD\tE\tF\tG\tH\tI\tJ\n";
@@ -105,16 +126,24 @@ void Battlefield::Put_ship(Ship* ship)
 	for (int i = 0; i < ship->Get_hp(); i++)
 	{
 		cin >> coordinate; // ввод координат
-		temp = coordinate[0]; // Запоминаем букву из координат
-		y = stoi(coordinate.substr(2)) - 1; // получаем подстроку с позиции 2 длиной до конца строки - это цифра из координат
-		x = int(temp) - 65; // преобразуем char в int и вычитаем 65 (математика ASCII)
-		if (Check_coordinate(y, x)) // проверяем не занята ля координата
+		if (Check_input(coordinate))
 		{
-			coordinate_ship.push(y);
-			coordinate_ship.push(x);
-			ship->Set_coordinates(x, y, i); // назначаем кораблю координаты
+			temp = coordinate[0]; // Запоминаем букву из координат
+			y = stoi(coordinate.substr(2)) - 1; // получаем подстроку с позиции 2 длиной до конца строки - это цифра из координат
+			x = int(temp) - 65; // преобразуем char в int и вычитаем 65 (математика ASCII)
+			if (Check_coordinate(y, x)) // проверяем не занята ля координата
+			{
+				coordinate_ship.push(y);
+				coordinate_ship.push(x);
+				ship->Set_coordinates(x, y, i); // назначаем кораблю координаты
+			}
+			else // если координата занята то вводим данные заново
+			{
+				i = -1;
+				cout << "\nInvalid coordinates re-enter the coordinates:\n";
+			}
 		}
-		else // если координата занята то вводим данные заново
+		else // если координата введена неверно то вводим данные заново
 		{
 			i = -1; 
 			cout << "\nInvalid coordinates re-enter the coordinates:\n";
@@ -257,11 +286,22 @@ bool Battlefield::Shot(int flag) // flag = 1 стреляет игрок flag = 
 	int x, y;
 	if (flag) // стреляет игрок
 	{
-		cout << "\nEnter the coordinates for shot in the following format: A-2\n";
-		cin >> coordinate; // ввод координат
-		temp = coordinate[0]; // Запоминаем букву из координат
-		y = stoi(coordinate.substr(2)) - 1; // получаем подстроку с позиции 2 длиной до конца строки - это цифра из координат
-		x = int(temp) - 65; // преобразуем char в int и вычитаем 65 (математика ASCII)
+		for (int i = 0; i < 1; i++)
+		{
+			cout << "\nEnter the coordinates for shot in the following format: A-2\n";
+			cin >> coordinate; // ввод координат
+			if (Check_input(coordinate))
+			{
+				temp = coordinate[0]; // Запоминаем букву из координат
+				y = stoi(coordinate.substr(2)) - 1; // получаем подстроку с позиции 2 длиной до конца строки - это цифра из координат
+				x = int(temp) - 65; // преобразуем char в int и вычитаем 65 (математика ASCII)
+			}
+			else
+			{
+				cout << "\nInvalid coordinates re-enter the coordinates:\n";
+				i = -1;
+			}
+		}
 	}
 	else // стреляет ИИ
 	{
@@ -280,6 +320,139 @@ bool Battlefield::Shot(int flag) // flag = 1 стреляет игрок flag = 
 	{
 		cout << "\nInvalid coordinates for shot re-enter the coordinates:\n";
 		Shot(flag); 
+	}
+	return false;
+}
+
+
+bool Battlefield::Shot_bomb()
+{
+	string coordinate;
+	char temp;
+	int x, y, temp_x, temp_y;
+	bool hit = false;
+	if (!q_bombs)
+	{
+		cout << "\nYou don't have bombs!\n";
+		return hit;
+	}
+	q_bombs--;
+	for (int i = 0; i < 1; i++)
+	{
+		cout << "\nEnter the coordinates for shot in the following format: A-2\n";
+		cin >> coordinate; // ввод координат
+		if (Check_input(coordinate))
+		{
+			temp = coordinate[0]; // Запоминаем букву из координат
+			y = stoi(coordinate.substr(2)) - 1; // получаем подстроку с позиции 2 длиной до конца строки - это цифра из координат
+			x = int(temp) - 65; // преобразуем char в int и вычитаем 65 (математика ASCII)
+		}
+		else
+		{
+			cout << "\nInvalid coordinates re-enter the coordinates:\n";
+			i = -1;
+		}
+	}
+	temp_y = y; // запоминаем начальные координаты вокруг которых будет взрыв
+	temp_x = x;
+		
+	for (int i = 0; i < 3; i++) // цикл для ударов вокруг точки в радиусе 1 клетки
+	{
+		x = temp_x;
+		if (i == 1)
+			if (temp_y > 0)
+				y = temp_y - 1;
+		if (i == 2)
+			if (temp_y < 9)
+				y = temp_y + 1;
+		for (int j = 0; j < 3; j++)
+		{
+			if (j == 1)
+				if (temp_x > 0)
+					x = temp_x - 1;
+			if (j == 2)
+				if (temp_x < 9)
+					x = temp_x + 1;
+			if (field[y][x] > 0) // если поле содержит корабль
+			{
+				Shot_ship(field[y][x], y, x); // вызываем функцию удара по кораблю
+				field[y][x] = -2; // присваиваем полю где был корабль -2, чтобы обозначить что там больше его нет
+				hit = true;
+			}
+			else if (!field[y][x]) // если мы выстрелили в пустое поле
+				field[y][x] = -1;
+			
+		}
+	}
+	
+	return hit;
+}
+
+bool Battlefield::Shot_torpedo()
+{
+	string coordinate;
+	char temp;
+	int x, y, start_x, start_y, final_x, final_y, direct, line, final_coordinate, direct_x, direct_y;
+	if (!q_torpedo)
+	{
+		cout << "\nYou don't have torpedoes!\n";
+		return false;
+	}
+	q_torpedo--;
+	for (int i = 0; i < 1; i++)
+	{
+		cout << "\nEnter column or row shot in format: A or 1\n";
+		cin >> coordinate; // ввод координат
+		if (coordinate.length() > 0 && coordinate.length() <= 2)
+		{
+			if (coordinate[0] <= 'J' && coordinate[0] >= 'A')
+			{
+				temp = coordinate[0]; // Запоминаем букву из координат
+				line = int(temp) - 65; // преобразуем char в int и вычитаем 65 (математика ASCII)
+				direct_x = line;
+				direct_y = 10;
+			}
+			else if ((coordinate[0] > '0' && coordinate[0] <= '9') || (coordinate[0] == '1' && coordinate[0] == '0'))
+			{
+				line = stoi(coordinate.substr(0)) - 1; // получаем подстроку с позиции 2 длиной до конца строки - это цифра из координат
+				direct_y = line;
+				direct_x = 10;
+			}
+			else
+			{
+				cout << "\nInvalid coordinates re-enter the coordinates:\n";
+				i = -1;
+			}
+			direct = 0;
+			final_coordinate = 9;
+		}
+		else
+		{
+			cout << "\nInvalid coordinates re-enter the coordinates:\n";
+			i = -1;
+		}
+	}
+
+	for (direct; direct <= final_coordinate; direct++ )
+	{
+		if (direct_y == line)
+		{
+			x = direct;
+			y = line;
+		}
+		else
+		{
+			y = direct;
+			x = line;
+		}
+		if (field[y][x] > 0) // если поле содержит корабль
+		{
+			Shot_ship(field[y][x], y, x); // вызываем функцию удара по кораблю
+			field[y][x] = -2; // присваиваем полю где был корабль -2, чтобы обозначить что там больше его нет
+			return true;
+		}
+		else if (!field[y][x]) // если мы выстрелили в пустое поле
+			field[y][x] = -1;
 	}
 	return false;
 }
